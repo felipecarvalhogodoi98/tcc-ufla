@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: division-service
+spec:
+  selector:
+    app: division-service
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: division-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: division-service
+  template:
+    metadata:
+      labels:
+        app: division-service
+    spec:
+      containers:
+      - name: division-service
+        image: felipegodoi/split-expenses-division-service:latest
+        ports:
+        - containerPort: 3000
