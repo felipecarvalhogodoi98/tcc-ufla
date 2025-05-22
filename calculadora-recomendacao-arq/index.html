@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora Arquitetural</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --primary: #bb86fc;
+      --text: #ffffff;
+      --neutral: #888;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: auto;
+    }
+
+    #sliders {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+    }
+
+    .property {
+      background-color: var(--card);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .property label {
+      display: block;
+      margin-bottom: auto;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .value-display {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-top: 0.25rem;
+    }
+
+    .score-display {
+      background-color: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      border: 1px solid var(--primary);
+      width: 800px;
+      margin: 0 auto;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+      background: linear-gradient(to right, red, orange, yellow, limegreen, #00e676);
+      position: relative;
+    }
+
+    .bar::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      width: 10px;
+      height: 28px;
+      background: var(--text);
+      border-radius: 3px;
+      transform: translateX(var(--slider-pos, 50%));
+      transition: transform 0.2s ease;
+    }
+
+    .recommendation {
+      margin-top: 1rem;
+      font-style: italic;
+      color: var(--neutral);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora Arquitetural</h1>
+
+    <div id="sliders">
+      
+    </div>
+
+    <div class="score-display" id="scoreBox">
+      Pontuação Total: <span id="score">0</span>
+      <div class="bar" id="bar"></div>
+      <div class="recommendation" id="recommendation"></div>
+    </div>
+  </div>
+
+  <script>
+    const properties = [
+      { name: 'Manutenção', weight: -1 },
+      { name: 'Custo', weight: -1 },
+      { name: 'Simplicidade Arquitetural', weight: -1 },
+      { name: 'Configuração Inicial', weight: -1 },
+      { name: 'Produtividade', weight: -1 },
+      { name: 'Escalabilidade', weight: 1 },
+      { name: 'Disponibilidade', weight: 1 },
+      { name: 'Resiliência', weight: 1 },
+      { name: 'Flexibilidade', weight: 1 },
+      { name: 'Desempenho', weight: 1 }
+    ];
+
+    const slidersDiv = document.getElementById('sliders');
+
+    properties.forEach((prop, index) => {
+      const div = document.createElement('div');
+      div.className = 'property';
+      div.innerHTML = `
+        <label for="prop${index}">${prop.name}</label>
+        <input type="range" min="1" max="5" value="3" id="prop${index}" data-weight="${prop.weight}" oninput="updateScore()">
+        <div class="value-display" id="value${index}">3</div>
+      `;
+      slidersDiv.appendChild(div);
+    });
+
+    function updateScore() {
+      let total = 0;
+      properties.forEach((_, index) => {
+        const slider = document.getElementById(`prop${index}`);
+        const weight = parseInt(slider.dataset.weight);
+        const value = parseInt(slider.value);
+        total += value * weight;
+        document.getElementById(`value${index}`).textContent = value;
+      });
+
+      document.getElementById('score').textContent = total;
+
+      const posPercent = ((total + 20) / 40) * 100;
+      document.getElementById('bar').style.setProperty('--slider-pos', `${posPercent}%`);
+
+      const recommendation = getRecommendation(total);
+      document.getElementById('recommendation').textContent = recommendation;
+    }
+
+    function getRecommendation(score) {
+      if (score <= -12) return "🔵 Monolito fortemente recomendado";
+      if (score <= -5) return "🟦 Monolito moderadamente recomendado";
+      if (score <= 4) return "⚪ Zona neutra";
+      if (score <= 11) return "🟩 Microsserviços moderadamente recomendados";
+      return "🟢 Microsserviços fortemente recomendados";
+    }
+
+    updateScore(); 
+  </script>
+</body>
+</html>

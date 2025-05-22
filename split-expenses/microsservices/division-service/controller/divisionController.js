@@ -33,7 +33,9 @@ exports.divideExpense = async (req, res) => {
       )
     );
 
-    res.status(201).json({ message: "Expense divided successfully" });
+    res
+      .status(201)
+      .json({ message: "Expense divided successfully" }, divisions);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error dividing expense" });
